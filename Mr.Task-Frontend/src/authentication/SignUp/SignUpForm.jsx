@@ -10,18 +10,50 @@ import { MdPeopleAlt } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import logoImg from "../../assets/image/taskManagerLogo.png";
+import { imageUpload } from "../../api/image";
+import useAuth from "../../hooks/useAuth";
+import { toast } from "react-toastify";
+import { updateProfile } from "firebase/auth";
+import { auth } from "../../firebase/firebase.config";
 
 const SignUpForm = () => {
   const [show, setShow] = useState(false);
+  const [showCon, setShowCon] = useState(false);
   const [error, setError] = useState("");
+  const { signUp } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const onSubmit = async (data) => {
     const { name, image, email, password, confirmPassword } = data || {};
-    console.log(name, image, email, password, confirmPassword);
+
+    if (password !== confirmPassword) {
+      return setError("Confirm password no match");
+    }
+
+    const imageFile = image[0];
+    const imageData = await imageUpload(imageFile);
+
+    setError("");
+    signUp(email, password)
+      .then(() => {
+        updateProfile(auth.currentUser, {
+          displayName: name,
+          photoURL: imageData?.data?.url,
+        })
+          .then(() => {
+            toast.success("Successfully Registered");
+          })
+          .catch((err) => {
+            setError(err?.message);
+          });
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -96,9 +128,9 @@ const SignUpForm = () => {
               className="absolute right-8 lg:right-12"
             >
               {show ? (
-                <AiOutlineEye className="text-2xl"></AiOutlineEye>
+                <AiOutlineEye className="text-2xl text-white"></AiOutlineEye>
               ) : (
-                <AiOutlineEyeInvisible className="text-2xl"></AiOutlineEyeInvisible>
+                <AiOutlineEyeInvisible className="text-2xl text-white"></AiOutlineEyeInvisible>
               )}
             </span>
           </div>
@@ -122,7 +154,7 @@ const SignUpForm = () => {
               <RiLockPasswordLine className="text-2xl"></RiLockPasswordLine>
             </label>
             <input
-              type={show ? "text" : "password"}
+              type={showCon ? "text" : "password"}
               name="confirmPassword"
               {...register("confirmPassword", {
                 required: true,
@@ -134,13 +166,13 @@ const SignUpForm = () => {
               className="w-3/4 mx-auto py-1 px-2 text-white bg-blue-950  rounded"
             />
             <span
-              onClick={() => setShow(!show)}
+              onClick={() => setShowCon(!showCon)}
               className="absolute right-8 lg:right-12"
             >
-              {show ? (
-                <AiOutlineEye className="text-2xl"></AiOutlineEye>
+              {showCon ? (
+                <AiOutlineEye className="text-2xl text-white"></AiOutlineEye>
               ) : (
-                <AiOutlineEyeInvisible className="text-2xl"></AiOutlineEyeInvisible>
+                <AiOutlineEyeInvisible className="text-2xl text-white"></AiOutlineEyeInvisible>
               )}
             </span>
           </div>

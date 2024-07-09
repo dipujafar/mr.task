@@ -9,10 +9,13 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { useState } from "react";
 import googleLogo from "../../assets/image/googleLogo2.png";
 import logoImg from "../../assets/image/taskManagerLogo.png";
+import { toast } from "react-toastify";
+import useAuth from "../../hooks/useAuth";
 
 const LoginForm = () => {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
+  const { signIn, singInWithGoogle } = useAuth();
   const {
     register,
     handleSubmit,
@@ -20,7 +23,25 @@ const LoginForm = () => {
   } = useForm();
   const onSubmit = (data) => {
     const { email, password } = data || {};
-    console.log(email, password);
+
+    signIn(email, password)
+      .then(() => {
+        toast.success("Successfully Login");
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  };
+
+  //google login
+  const handleGoogleSing = () => {
+    singInWithGoogle()
+      .then(() => {
+        toast.success("Success Login with Google");
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
   return (
@@ -76,9 +97,9 @@ const LoginForm = () => {
             className="absolute right-6 lg:right-12"
           >
             {show ? (
-              <AiOutlineEye className="text-2xl"></AiOutlineEye>
+              <AiOutlineEye className="text-2xl text-white"></AiOutlineEye>
             ) : (
-              <AiOutlineEyeInvisible className="text-2xl"></AiOutlineEyeInvisible>
+              <AiOutlineEyeInvisible className="text-2xl  text-white"></AiOutlineEyeInvisible>
             )}
           </span>
         </div>
@@ -107,7 +128,7 @@ const LoginForm = () => {
       <fieldset className="space-y-2 border-t mt-2">
         <legend className="text-center  px-2">OR</legend>
         <button
-          //   onClick={handleGoogleSing}
+          onClick={handleGoogleSing}
           className="flex items-center btn bg-transparent border-black w-full"
         >
           <img src={googleLogo} className="w-10" /> Login With Google
