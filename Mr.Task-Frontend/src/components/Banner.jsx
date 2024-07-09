@@ -6,8 +6,8 @@ import BannerImage from "./BannerImage";
 
 const Banner = () => {
   return (
-    <div className="flex flex-col lg:flex-row">
-      <div className=" flex-1 mt-10 lg:space-y-10">
+    <div className="flex flex-col gap-5 lg:flex-row">
+      <div className=" flex-1 mt-10 space-y-5 lg:space-y-10">
         {/* logo  */}
         <Link
           to="/"
@@ -18,7 +18,7 @@ const Banner = () => {
         </Link>
         {/* Heading Text  */}
         <div className="space-y-5">
-          <h1 className="  text-7xl font-light">
+          <h1 className=" text-4xl md:text-7xl font-light">
             {" "}
             <span className=" text-sky-500 flex gap-5 items-center">
               ONLINE{" "}
@@ -30,7 +30,7 @@ const Banner = () => {
             </span>
             TASK MANAGER
           </h1>
-          <h1 className=" text-6xl font-medium">
+          <h1 className="text-3xl md:text-6xl font-medium">
             <Typewriter
               options={{
                 autoStart: true,
@@ -52,7 +52,7 @@ const Banner = () => {
         {/* action button  */}
         <Link
           to="/login"
-          className="btn bg-gradient-to-r from-sky-800 to-sky-500 px-10  rounded-full text-white text-lg"
+          className="btn btn-lg bg-gradient-to-r from-sky-800 to-sky-500 px-20  rounded-full text-white text-xl"
         >
           Get Start
         </Link>

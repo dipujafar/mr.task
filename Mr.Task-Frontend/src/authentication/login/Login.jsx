@@ -1,21 +1,21 @@
-import SignUpForm from "./SignUpForm";
-import signImg from "../../assets/image/taskManagementSignUp.png";
-import { Helmet } from "react-helmet-async";
 import Container from "../../shared/Container";
+import LoginForm from "./LoginForm";
+import loginImg from "../../assets/image/taskManagementLogin.png";
+import { Helmet } from "react-helmet-async";
 
-const SignUp = () => {
+const Login = () => {
   return (
     <div>
       <Helmet>
-        <title>FarmEr | SignUp</title>
+        <title>FarmEr | Login</title>
       </Helmet>
       <Container>
         <div className="min-h-screen w-full flex flex-col lg:flex-row gap-3 justify-center items-center">
           <div className="flex-1">
-            <SignUpForm></SignUpForm>
+            <LoginForm></LoginForm>
           </div>
           <div className="flex-1">
-            <img src={signImg} alt="Mr.TaskImg" className="w-full" />
+            <img src={loginImg} alt="farmerImg" className="w-full" />
           </div>
         </div>
       </Container>
@@ -23,4 +23,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Login;
