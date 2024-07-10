@@ -7,7 +7,7 @@ const Login = () => {
   return (
     <div>
       <Helmet>
-        <title>FarmEr | Login</title>
+        <title>Mr.Task | Login</title>
       </Helmet>
       <Container>
         <div className="min-h-screen w-full flex flex-col lg:flex-row gap-3 justify-center items-center">

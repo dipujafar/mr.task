@@ -11,11 +11,13 @@ import googleLogo from "../../assets/image/googleLogo2.png";
 import logoImg from "../../assets/image/taskManagerLogo.png";
 import { toast } from "react-toastify";
 import useAuth from "../../hooks/useAuth";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const LoginForm = () => {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const { signIn, singInWithGoogle } = useAuth();
+  const axiosPublic = useAxiosPublic();
   const {
     register,
     handleSubmit,
@@ -36,8 +38,15 @@ const LoginForm = () => {
   //google login
   const handleGoogleSing = () => {
     singInWithGoogle()
-      .then(() => {
-        toast.success("Success Login with Google");
+      .then((result) => {
+        const userInfo = {
+          email: result.user.email,
+          name: result.user.displayName,
+          image: result.user.photoURL,
+        };
+        axiosPublic.post("/users", userInfo).then(() => {
+          toast.success("Success Login with Google");
+        });
       })
       .catch((error) => {
         setError(error.message);
@@ -137,7 +146,7 @@ const LoginForm = () => {
       <p className="mt-2">
         Do not have Account?{" "}
         <Link to="/signup">
-          <span className="text-blue-600 font-semibold">Sign Up</span>
+          <span className="text-blue-600 font-semibold">Register</span>
         </Link>
       </p>
     </div>

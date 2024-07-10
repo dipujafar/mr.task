@@ -15,12 +15,14 @@ import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
 import { updateProfile } from "firebase/auth";
 import { auth } from "../../firebase/firebase.config";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const SignUpForm = () => {
   const [show, setShow] = useState(false);
   const [showCon, setShowCon] = useState(false);
   const [error, setError] = useState("");
   const { signUp } = useAuth();
+  const axiosPublic = useAxiosPublic();
   const {
     register,
     handleSubmit,
@@ -45,7 +47,20 @@ const SignUpForm = () => {
           photoURL: imageData?.data?.url,
         })
           .then(() => {
-            toast.success("Successfully Registered");
+            const userInfo = {
+              email,
+              name,
+              image: imageData?.data?.url,
+            };
+
+            axiosPublic
+              .post("/users", userInfo)
+              .then((res) => {
+                if (res.data.insertedId) {
+                  toast.success("Successfully Registered");
+                }
+              })
+              .catch((error) => setError(error.message));
           })
           .catch((err) => {
             setError(err?.message);
