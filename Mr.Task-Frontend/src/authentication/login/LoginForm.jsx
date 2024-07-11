@@ -30,7 +30,7 @@ const LoginForm = () => {
     signIn(email, password)
       .then(() => {
         toast.success("Successfully Login");
-        navigate("/dashboard/tasks");
+        navigate("/dashboard");
       })
       .catch((err) => {
         setError(err.message);
@@ -48,7 +48,7 @@ const LoginForm = () => {
         };
         axiosPublic.post("/users", userInfo).then(() => {
           toast.success("Success Login with Google");
-          navigate("/dashboard/tasks");
+          navigate("/dashboard");
         });
       })
       .catch((error) => {

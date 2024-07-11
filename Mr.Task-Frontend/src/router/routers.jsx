@@ -5,8 +5,8 @@ import Root from "../layout/Root";
 import Login from "../authentication/login/Login";
 import ErrorPage from "../pages/ErrorPage";
 import Dashboard from "../layout/Dashboard";
-import PrivateRoute from "./PrivateRoute";
 import Tasks from "../pages/dashboard/Tasks";
+import AdminTask from "../pages/dashboard/AdminTask";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: "tasks",
         element: <Tasks></Tasks>,
+      },
+      {
+        path: "admin/tasks",
+        element: <AdminTask></AdminTask>,
       },
     ],
   },

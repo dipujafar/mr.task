@@ -4,12 +4,12 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 const jwt = require("jsonwebtoken");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://mrtask-d0594.web.app/"],
     credentials: true,
   })
 );
@@ -45,10 +45,22 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const userCollection = client.db("mrTask").collection("users");
     const tasksCollection = client.db("mrTask").collection("tasks");
+
+    //middleware
+    const verifyAdmin = async (req, res, next) => {
+      const email = req?.decoded?.email;
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      const isAdmin = user?.role === "admin";
+      if (!isAdmin) {
+        return res.status(403).send({ message: "forbidden" });
+      }
+      next();
+    };
 
     //jwt related apis
     app.post("/jwt", async (req, res) => {
@@ -66,7 +78,7 @@ async function run() {
     });
 
     // insert task
-    app.post("/tasks", async (req, res) => {
+    app.post("/tasks", verifyToken, async (req, res) => {
       try {
         const task = req.body;
         const result = await tasksCollection.insertOne(task);
@@ -76,10 +88,71 @@ async function run() {
       }
     });
 
+    //get tasks
+    app.get("/tasks", verifyToken, async (req, res) => {
+      try {
+        const result = await tasksCollection.find().toArray();
+        res.send(result);
+      } catch {
+        next(err);
+      }
+    });
+
+    app.get("/tasks/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const result = await tasksCollection.find({ email: email }).toArray();
+        res.send(result);
+      } catch {
+        next(err);
+      }
+    });
+
+    //change status
+    app.put("/tasks/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const status = req.body.status;
+        console.log(status);
+        const query = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: {
+            status: status,
+          },
+        };
+        const result = await tasksCollection.updateOne(
+          query,
+          updateDoc,
+          options
+        );
+        console.log(result);
+        res.send(result);
+      } catch {
+        (err) => {
+          next(err);
+        };
+      }
+    });
+
+    app.delete("/tasks/:id", verifyToken, verifyAdmin, async (req, res) => {
+      try {
+        const id = req?.params?.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await tasksCollection.deleteOne(query);
+        res.send(result);
+      } catch {
+        (err) => {
+          next(err);
+        };
+      }
+    });
+
     // insert user
-    app.post("/users", verifyToken, async (req, res, next) => {
+    app.post("/users", async (req, res, next) => {
       try {
         const user = req.body;
+
         const query = { email: user.email };
         const existingUser = await userCollection.findOne(query);
         if (existingUser) {
@@ -90,6 +163,28 @@ async function run() {
       } catch {
         (err) => {
           next(err);
+        };
+      }
+    });
+
+    // admin related api
+    app.get("/users/admin/:email", verifyToken, async (req, res) => {
+      try {
+        const email = req.params.email;
+        if (email !== req.decoded.email) {
+          return res.status(403).send({ message: "forbidden" });
+        }
+
+        const query = { email: email };
+        const user = await userCollection.findOne(query);
+        let admin = false;
+        if (user) {
+          admin = user?.role === "admin";
+        }
+        res.send({ admin });
+      } catch {
+        (err) => {
+          res.send(err);
         };
       }
     });

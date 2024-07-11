@@ -1,15 +1,15 @@
-import { GoTasklist } from "react-icons/go";
-import AddTask from "./AddTask";
-import useUserTask from "../../hooks/userUserTask";
-import useAxiosSecure from "./../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
+import useAllTask from "../../hooks/useAllTask";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import AddTask from "./AddTask";
+import { GoTasklist } from "react-icons/go";
+import Swal from "sweetalert2";
 
-const Tasks = () => {
-  const [tasks, isLoading, refetch] = useUserTask();
-  const tasksRev = [...tasks]?.reverse() || [];
-  const axiosSecure = useAxiosSecure();
-
+const AdminTask = () => {
+  const [allTasks, isLoading, refetch] = useAllTask();
+  const tasksRev = [...allTasks]?.reverse() || [];
   const taskStatus = ["To-Do", "In Progress", "Completed"];
+  const axiosSecure = useAxiosSecure();
 
   const handleChangeStatus = async (status, id) => {
     const res = await axiosSecure.put(`/tasks/${id}`, { status });
@@ -19,22 +19,38 @@ const Tasks = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <span className="loading loading-dots loading-lg text-sky-600"></span>
-      </div>
-    );
-  }
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this task!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/tasks/${id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            refetch();
+            Swal.fire({
+              title: "Deleted!",
+              text: "The task has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      }
+    });
+  };
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-4xl font-semibold flex gap-2">
+    <div>
+      <h1 className="text-4xl font-semibold flex gap-2 mb-2">
         Task <GoTasklist />
       </h1>
       <AddTask refetch={refetch}></AddTask>
 
-      {/* all task  */}
       {
         <div className="mt-5 space-y-5">
           {tasksRev?.map((task) => (
@@ -63,14 +79,19 @@ const Tasks = () => {
                     ))}
                   </select>
                 </div>
+                <button
+                  onClick={() => handleDelete(task?._id)}
+                  className="btn btn-error btn-sm"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
         </div>
       }
-      <div></div>
     </div>
   );
 };
 
-export default Tasks;
+export default AdminTask;

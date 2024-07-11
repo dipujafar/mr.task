@@ -2,8 +2,10 @@ import { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import useAxiosSecure from "./../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
+import useAuth from "../../hooks/useAuth";
 
-const AddTask = () => {
+const AddTask = ({ refetch }) => {
+  const { user } = useAuth();
   const [status, setStatus] = useState();
   const axiosSecure = useAxiosSecure();
 
@@ -19,12 +21,14 @@ const AddTask = () => {
       taskName,
       description,
       status,
+      email: user?.email,
     };
 
     const res = await axiosSecure.post("/tasks", task);
     if (res?.data?.insertedId) {
+      refetch();
       toast.success("Successfully added  you task");
-      form.reset();
+      e.target.reset();
     }
   };
 
@@ -48,6 +52,7 @@ const AddTask = () => {
                 type="text"
                 name="taskName"
                 placeholder="Task Name"
+                required
                 className="px-2 py-1 border-none block"
               />
             </div>

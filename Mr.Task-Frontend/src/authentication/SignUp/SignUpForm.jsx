@@ -8,7 +8,7 @@ import { FaCamera } from "react-icons/fa";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdPeopleAlt } from "react-icons/md";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoImg from "../../assets/image/taskManagerLogo.png";
 import { imageUpload } from "../../api/image";
 import useAuth from "../../hooks/useAuth";
@@ -23,6 +23,7 @@ const SignUpForm = () => {
   const [error, setError] = useState("");
   const { signUp } = useAuth();
   const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -59,6 +60,7 @@ const SignUpForm = () => {
                 console.log(res);
                 if (res.data.insertedId) {
                   toast.success("Successfully Registered");
+                  navigate("/dashboard");
                 }
               })
               .catch((error) => setError(error.message));
