@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AiOutlineEye,
   AiOutlineEyeInvisible,
@@ -18,6 +18,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const { signIn, singInWithGoogle } = useAuth();
   const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -29,6 +30,7 @@ const LoginForm = () => {
     signIn(email, password)
       .then(() => {
         toast.success("Successfully Login");
+        navigate("/dashboard/tasks");
       })
       .catch((err) => {
         setError(err.message);
@@ -46,6 +48,7 @@ const LoginForm = () => {
         };
         axiosPublic.post("/users", userInfo).then(() => {
           toast.success("Success Login with Google");
+          navigate("/dashboard/tasks");
         });
       })
       .catch((error) => {

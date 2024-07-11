@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import AuthProvider from "./provider/AuthProvider";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import "react-datepicker/dist/react-datepicker.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

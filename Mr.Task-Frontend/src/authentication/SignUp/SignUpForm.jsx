@@ -56,6 +56,7 @@ const SignUpForm = () => {
             axiosPublic
               .post("/users", userInfo)
               .then((res) => {
+                console.log(res);
                 if (res.data.insertedId) {
                   toast.success("Successfully Registered");
                 }
