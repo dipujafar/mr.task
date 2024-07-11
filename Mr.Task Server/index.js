@@ -9,7 +9,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://mrtask-d0594.web.app/"],
+    origin: ["http://localhost:5173", "https://mrtask-d0594.web.app"],
     credentials: true,
   })
 );
@@ -189,12 +189,8 @@ async function run() {
       }
     });
 
-    app.all("*", (req, res) => {
-      res.status(400).send("Route is not found");
-    });
-
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
